@@ -93,9 +93,8 @@ architecture arch of top is
   -- registers
   signal led_reg : std_logic_vector(7 downto 0);
 
-  signal gfx_ram_addr_b : unsigned(GFX_RAM_ADDR_WIDTH-1 downto 0);
-  signal gfx_ram_dout_b : std_logic_vector(GFX_RAM_DATA_WIDTH-1 downto 0);
-  signal display_row_addr : unsigned(2 downto 0);
+  signal display_ram_addr : unsigned(GFX_RAM_ADDR_WIDTH-1 downto 0);
+  signal display_ram_data : std_logic_vector(GFX_RAM_DATA_WIDTH-1 downto 0);
 begin
   clock_divider : entity work.clock_divider
   generic map (DIVISOR => 50)
@@ -150,8 +149,8 @@ begin
       addr_a => cpu_addr(5 downto 0),
       din_a  => cpu_dout,
       we_a   => not cpu_wr_n,
-      addr_b => gfx_ram_addr_b,
-      dout_b => gfx_ram_dout_b
+      addr_b => display_ram_addr,
+      dout_b => display_ram_data
     );
 
   cpu : entity work.T80s
@@ -192,20 +191,26 @@ begin
     port map (
       reset        => reset,
       clk          => clk,
-      ram_addr     => gfx_ram_addr_b,
-      ram_data     => gfx_ram_dout_b,
+      ram_addr     => display_ram_addr,
+      ram_data     => display_ram_data,
       matrix_rows  => rows,
       matrix_cols  => cols,
-      row_addr     => display_row_addr
+      row_addr     => open
     );
 
   -- mux CPU data input
   cpu_din <= rom_dout or work_ram_dout;
 
+  --  address    description
+  -- ----------+-----------------
+  -- 0000-0fff | program ROM
+  -- 1000-1fff | work RAM
+  -- 2000-203f | gfx RAM
   prog_rom_cs <= '1' when cpu_addr >= x"0000" and cpu_addr <= x"0fff" else '0';
   work_ram_cs <= '1' when cpu_addr >= x"1000" and cpu_addr <= x"1fff" else '0';
   gfx_ram_cs  <= '1' when cpu_addr >= x"2000" and cpu_addr <= x"203f" else '0';
   led_cs      <= '1' when cpu_addr(7 downto 0) = x"00" else '0';
 
+  -- set LED output
   led <= led_reg;
 end arch;
