@@ -30,6 +30,9 @@ entity top is
     -- buttons
     key : in std_logic_vector(1 downto 0);
 
+    -- leds
+    led : out std_logic_vector(7 downto 0);
+
     -- display rows/columns
     rows : out std_logic_vector(7 downto 0);
     cols : out std_logic_vector(7 downto 0)
@@ -80,18 +83,18 @@ architecture arch of top is
   -- data output signals
   signal rom_dout      : std_logic_vector(7 downto 0);
   signal work_ram_dout : std_logic_vector(7 downto 0);
-  signal gfx_ram_dout  : std_logic_vector(7 downto 0);
 
   -- chip select signals
   signal prog_rom_cs : std_logic;
   signal work_ram_cs : std_logic;
   signal gfx_ram_cs  : std_logic;
+  signal led_cs      : std_logic;
 
-  signal work_ram_addr_a, work_ram_addr_b : unsigned(GFX_RAM_ADDR_WIDTH-1 downto 0);
-  signal work_ram_din_a, work_ram_dout_b : std_logic_vector(GFX_RAM_DATA_WIDTH-1 downto 0);
-  signal work_ram_we_a : std_logic;
+  -- registers
+  signal led_reg : std_logic_vector(7 downto 0);
 
-  signal display_addr : unsigned(DISPLAY_ADDR_WIDTH-1 downto 0);
+  signal gfx_ram_addr_b : unsigned(GFX_RAM_ADDR_WIDTH-1 downto 0);
+  signal gfx_ram_dout_b : std_logic_vector(GFX_RAM_DATA_WIDTH-1 downto 0);
   signal display_row_addr : unsigned(2 downto 0);
 begin
   clock_divider : entity work.clock_divider
@@ -108,18 +111,6 @@ begin
     rin  => not key(0),
     rout => reset
   );
-
-  -- display_rom : entity work.single_port_rom
-  --   generic map (
-  --     ADDR_WIDTH => GFX_RAM_ADDR_WIDTH,
-  --     DATA_WIDTH => GFX_RAM_DATA_WIDTH,
-  --     INIT_FILE  => "rom/image.mif"
-  --   )
-  --   port map (
-  --     clk  => clk,
-  --     addr => ram_addr_b,
-  --     dout => ram_dout_b
-  --   );
 
   prog_rom : entity work.single_port_rom
   generic map(
@@ -155,12 +146,12 @@ begin
     )
     port map (
       clk    => clk,
-      cs_a   => work_ram_cs,
-      addr_a => work_ram_addr_a,
-      din_a  => work_ram_din_a,
-      we_a   => work_ram_we_a,
-      addr_b => work_ram_addr_b,
-      dout_b => work_ram_dout_b
+      cs_a   => gfx_ram_cs,
+      addr_a => cpu_addr(5 downto 0),
+      din_a  => cpu_dout,
+      we_a   => not cpu_wr_n,
+      addr_b => gfx_ram_addr_b,
+      dout_b => gfx_ram_dout_b
     );
 
   cpu : entity work.T80s
@@ -182,6 +173,15 @@ begin
     DO          => cpu_dout
   );
 
+  set_led_register : process (clk)
+  begin
+    if rising_edge(clk) then
+      if led_cs = '1' and cpu_ioreq_n = '0' and cpu_wr_n = '0' then
+        led_reg <= cpu_dout;
+      end if;
+    end if;
+  end process;
+
   display : entity work.display
     generic map (
       ADDR_WIDTH     => DISPLAY_ADDR_WIDTH,
@@ -192,19 +192,20 @@ begin
     port map (
       reset        => reset,
       clk          => clk,
-      ram_addr     => display_addr,
-      ram_data     => work_ram_dout_b,
+      ram_addr     => gfx_ram_addr_b,
+      ram_data     => gfx_ram_dout_b,
       matrix_rows  => rows,
       matrix_cols  => cols,
       row_addr     => display_row_addr
     );
 
-  work_ram_addr_b <= display_addr;
-
   -- mux CPU data input
-  cpu_din <= rom_dout or work_ram_dout or gfx_ram_dout;
+  cpu_din <= rom_dout or work_ram_dout;
 
   prog_rom_cs <= '1' when cpu_addr >= x"0000" and cpu_addr <= x"0fff" else '0';
   work_ram_cs <= '1' when cpu_addr >= x"1000" and cpu_addr <= x"1fff" else '0';
   gfx_ram_cs  <= '1' when cpu_addr >= x"2000" and cpu_addr <= x"203f" else '0';
+  led_cs      <= '1' when cpu_addr(7 downto 0) = x"00" else '0';
+
+  led <= led_reg;
 end arch;
