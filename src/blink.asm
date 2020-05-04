@@ -1,21 +1,15 @@
-  ld sp, $2000
+  ld sp, $2000 ; set stack pointer address
+  ld hl, $2000 ; set gfx buffer address
 
 loop:
-  ld a, $00
-  out ($00), a
-
+  ld (hl), $00
   call delay
-
-  ld a, $ff
-  out ($00), a
-
+  ld (hl), $ff
   call delay
-
   jp loop
 
-; wait for 1s
 delay:
-  ld de, $8000
+  ld de, $8000 ; wait for 1s
 _delay:
   dec de
   ld a, d
