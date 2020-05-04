@@ -34,15 +34,14 @@ entity dual_port_ram is
     -- clock
     clk : in std_logic;
 
-    -- chip select
-    cs : in std_logic := '1';
-
     -- port A (write)
+    cs_a   : in std_logic := '1';
     addr_a : in unsigned(ADDR_WIDTH-1 downto 0);
     din_a  : in std_logic_vector(DATA_WIDTH-1 downto 0) := (others => '0');
     we_a   : in std_logic := '1';
 
     -- port B (read)
+    cs_b   : in std_logic := '1';
     addr_b : in unsigned(ADDR_WIDTH-1 downto 0);
     dout_b : out std_logic_vector(DATA_WIDTH-1 downto 0);
     re_b   : in std_logic := '1'
@@ -83,12 +82,12 @@ begin
     address_a => std_logic_vector(addr_a),
     address_b => std_logic_vector(addr_b),
     clock0    => clk,
-    wren_a    => cs and we_a,
-    rden_b    => cs and re_b,
+    wren_a    => cs_a and we_a,
+    rden_b    => cs_b and re_b,
     data_a    => din_a,
     q_b       => q
   );
 
   -- output
-  dout_b <= q when cs = '1' else (others => '0');
+  dout_b <= q when cs_b = '1' else (others => '0');
 end architecture arch;
