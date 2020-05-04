@@ -1,0 +1,61 @@
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE22F17C6
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 18.1.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "16:15:06  JUNE 21, 2019"
+set_global_assignment -name LAST_QUARTUS_VERSION "19.1.0 Lite Edition"
+set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+
+set_location_assignment PIN_R8 -to clk
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to clk
+
+set_location_assignment PIN_D3 -to cols[0]
+set_location_assignment PIN_C3 -to cols[1]
+set_location_assignment PIN_A2 -to cols[2]
+set_location_assignment PIN_A3 -to cols[3]
+set_location_assignment PIN_B3 -to cols[4]
+set_location_assignment PIN_B4 -to cols[5]
+set_location_assignment PIN_A4 -to cols[6]
+set_location_assignment PIN_B5 -to cols[7]
+
+set_location_assignment PIN_A5 -to rows[0]
+set_location_assignment PIN_D5 -to rows[1]
+set_location_assignment PIN_B6 -to rows[2]
+set_location_assignment PIN_A6 -to rows[3]
+set_location_assignment PIN_B7 -to rows[4]
+set_location_assignment PIN_D6 -to rows[5]
+set_location_assignment PIN_A7 -to rows[6]
+set_location_assignment PIN_C6 -to rows[7]
+
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to cols[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to cols[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to cols[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to cols[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to cols[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to cols[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to cols[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to cols[7]
+
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to rows[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to rows[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to rows[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to rows[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to rows[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to rows[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to rows[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to rows[7]
+
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name TOP_LEVEL_ENTITY top
+set_global_assignment -name QIP_FILE src/pll.qip
+set_global_assignment -name QIP_FILE src/t80.qip
+set_global_assignment -name SDC_FILE src/matrix.sdc
+set_global_assignment -name VHDL_FILE src/clock_divider.vhd
+set_global_assignment -name VHDL_FILE src/display.vhd
+set_global_assignment -name VHDL_FILE src/dual_port_ram.vhd
+set_global_assignment -name VHDL_FILE src/gamma.vhd
+set_global_assignment -name VHDL_FILE src/single_port_ram.vhd
+set_global_assignment -name VHDL_FILE src/single_port_rom.vhd
+set_global_assignment -name VHDL_FILE src/top.vhd
