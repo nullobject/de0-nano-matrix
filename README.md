@@ -1,6 +1,12 @@
 # DE0-Nano Matrix
 
-A LED matrix written in VHDL for DE0-Nano.
+A LED matrix controller written in VHDL for the DE0-Nano FPGA development board.
+
+## Getting Started
+
+Install dependencies;
+
+    $ sudo apt install srecord z80asm
 
 Compile:
 
@@ -9,3 +15,7 @@ Compile:
 Program:
 
     $ make program
+
+Rebuild program ROM:
+
+    $ make rom
