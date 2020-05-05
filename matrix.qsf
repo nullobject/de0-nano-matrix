@@ -64,14 +64,14 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to rows[6]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to rows[7]
 
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
-set_global_assignment -name TOP_LEVEL_ENTITY top
+set_global_assignment -name TOP_LEVEL_ENTITY matrix
 set_global_assignment -name QIP_FILE src/t80.qip
 set_global_assignment -name SDC_FILE src/matrix.sdc
 set_global_assignment -name VHDL_FILE src/clock_divider.vhd
 set_global_assignment -name VHDL_FILE src/display.vhd
 set_global_assignment -name VHDL_FILE src/dual_port_ram.vhd
 set_global_assignment -name VHDL_FILE src/gamma.vhd
+set_global_assignment -name VHDL_FILE src/matrix.vhd
 set_global_assignment -name VHDL_FILE src/reset_gen.vhd
 set_global_assignment -name VHDL_FILE src/single_port_ram.vhd
 set_global_assignment -name VHDL_FILE src/single_port_rom.vhd
-set_global_assignment -name VHDL_FILE src/top.vhd
