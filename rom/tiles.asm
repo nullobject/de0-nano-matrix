@@ -7,19 +7,26 @@ DISPLAY_SIZE: equ 64 ; pixels
 
 DELAY_DURATION: equ $2000; 1 second
 
-COUNTER: equ 0
+MIN_TILE_INDEX: equ 48 ; 0
+MAX_TILE_INDEX: equ 91 ; Z
+
+TILE_INDEX: equ 0
 
   ld sp, STACK_ADDR
   di
 
 start:
   ld ix, WRAM_ADDR
-  ld (ix+COUNTER), 2 ; initialise counter
+  ld (ix+TILE_INDEX), MIN_TILE_INDEX ; initialise tile index
 
 loop:
   ld ix, WRAM_ADDR
-  ld c, (ix+COUNTER) ; load counter into B
-  inc (ix+COUNTER)   ; increment counter
+  ld a, MAX_TILE_INDEX
+  cp (ix+TILE_INDEX)
+  jp z, start
+
+  ld c, (ix+TILE_INDEX) ; load tile index into C
+  inc (ix+TILE_INDEX)   ; increment tile index
   call blit_tile
 
   ld hl, DELAY_DURATION
