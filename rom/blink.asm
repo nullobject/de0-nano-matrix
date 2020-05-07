@@ -1,13 +1,17 @@
-STACK_ADDR: equ $2000 ; stack address
-VRAM_ADDR: equ $2000 ; VRAM address
-NUM_LEDS: equ 64 ; number of LEDs
+ROM_ADDR:   equ $0000 ; ROM address
+WRAM_ADDR:  equ $4000 ; WRAM address
+VRAM_ADDR:  equ $8000 ; VRAM address
+STACK_ADDR: equ $8000 ; stack address
+
+DISPLAY_SIZE: equ 64 ; pixels
+
 DELAY_DURATION: equ $8000; 1 second
 
   di
   ld sp, STACK_ADDR
 
 start:
-  ld b, NUM_LEDS
+  ld b, DISPLAY_SIZE ; number of bytes to copy
   ld c, $ff
   ld hl, VRAM_ADDR
   call fill
@@ -15,7 +19,7 @@ start:
   ld bc, DELAY_DURATION
   call delay
 
-  ld b, NUM_LEDS
+  ld b, DISPLAY_SIZE ; number of bytes to copy
   ld c, $00
   ld hl, VRAM_ADDR
   call fill

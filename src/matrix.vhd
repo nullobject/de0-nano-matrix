@@ -40,8 +40,9 @@ entity matrix is
 end matrix;
 
 architecture arch of matrix is
-  constant GFX_RAM_ADDR_WIDTH : natural := 6;
-  constant GFX_RAM_DATA_WIDTH : natural := 8;
+  constant PROG_ROM_ADDR_WIDTH  : natural := 14;
+  constant WORK_RAM_ADDR_WIDTH  : natural := 14;
+  constant VIDEO_RAM_ADDR_WIDTH : natural := 6;
 
   constant DISPLAY_ADDR_WIDTH : natural := 6;
   constant DISPLAY_DATA_WIDTH : natural := 8;
@@ -85,16 +86,16 @@ architecture arch of matrix is
   signal work_ram_dout : std_logic_vector(7 downto 0);
 
   -- chip select signals
-  signal prog_rom_cs : std_logic;
-  signal work_ram_cs : std_logic;
-  signal gfx_ram_cs  : std_logic;
-  signal led_cs      : std_logic;
+  signal prog_rom_cs  : std_logic;
+  signal work_ram_cs  : std_logic;
+  signal video_ram_cs : std_logic;
+  signal led_cs       : std_logic;
 
   -- registers
   signal led_reg : std_logic_vector(7 downto 0);
 
-  signal display_ram_addr : unsigned(GFX_RAM_ADDR_WIDTH-1 downto 0);
-  signal display_ram_data : std_logic_vector(GFX_RAM_DATA_WIDTH-1 downto 0);
+  signal display_ram_addr : unsigned(VIDEO_RAM_ADDR_WIDTH-1 downto 0);
+  signal display_ram_data : std_logic_vector(7 downto 0);
 begin
   clock_divider : entity work.clock_divider
   generic map (DIVISOR => 50)
@@ -113,39 +114,39 @@ begin
 
   prog_rom : entity work.single_port_rom
   generic map(
-    ADDR_WIDTH => 12,
+    ADDR_WIDTH => PROG_ROM_ADDR_WIDTH,
     DATA_WIDTH => 8,
-    INIT_FILE  => "rom/blink.mif"
+    INIT_FILE  => "rom/prog_rom.mif"
   )
   port map(
     clk  => clk,
     cs   => prog_rom_cs and not cpu_mreq_n and not cpu_rd_n,
-    addr => cpu_addr(11 downto 0),
+    addr => cpu_addr(PROG_ROM_ADDR_WIDTH-1 downto 0),
     dout => rom_dout
   );
 
   work_ram : entity work.single_port_ram
   generic map(
-    ADDR_WIDTH => 12,
+    ADDR_WIDTH => WORK_RAM_ADDR_WIDTH,
     DATA_WIDTH => 8
   )
   port map(
     clk  => clk,
     cs   => work_ram_cs and not cpu_mreq_n,
-    addr => cpu_addr(11 downto 0),
+    addr => cpu_addr(WORK_RAM_ADDR_WIDTH-1 downto 0),
     din  => cpu_dout,
     dout => work_ram_dout,
     we   => not cpu_wr_n
   );
 
-  gfx_ram : entity work.dual_port_ram
+  video_ram : entity work.dual_port_ram
     generic map (
-      ADDR_WIDTH => GFX_RAM_ADDR_WIDTH,
-      DATA_WIDTH => GFX_RAM_DATA_WIDTH
+      ADDR_WIDTH => VIDEO_RAM_ADDR_WIDTH,
+      DATA_WIDTH => 8
     )
     port map (
       clk    => clk,
-      cs_a   => gfx_ram_cs,
+      cs_a   => video_ram_cs,
       addr_a => cpu_addr(5 downto 0),
       din_a  => cpu_dout,
       we_a   => not cpu_wr_n,
@@ -203,13 +204,13 @@ begin
 
   --  address    description
   -- ----------+-----------------
-  -- 0000-0fff | program ROM
-  -- 1000-1fff | work RAM
-  -- 2000-203f | gfx RAM
-  prog_rom_cs <= '1' when cpu_addr >= x"0000" and cpu_addr <= x"0fff" else '0';
-  work_ram_cs <= '1' when cpu_addr >= x"1000" and cpu_addr <= x"1fff" else '0';
-  gfx_ram_cs  <= '1' when cpu_addr >= x"2000" and cpu_addr <= x"203f" else '0';
-  led_cs      <= '1' when cpu_addr(7 downto 0) = x"00" else '0';
+  -- 0000-3fff | program ROM
+  -- 4000-7fff | work RAM
+  -- 8000-803f | video RAM
+  prog_rom_cs  <= '1' when cpu_addr >= x"0000" and cpu_addr <= x"3fff" else '0';
+  work_ram_cs  <= '1' when cpu_addr >= x"4000" and cpu_addr <= x"7fff" else '0';
+  video_ram_cs <= '1' when cpu_addr >= x"8000" and cpu_addr <= x"803f" else '0';
+  led_cs       <= '1' when cpu_addr(7 downto 0) = x"00" else '0';
 
   -- set LED output
   led <= led_reg;
