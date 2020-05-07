@@ -1,21 +1,21 @@
 .PHONY: build rom program clean
 
+%.bin: %.asm
+	z80asm -I rom -o $@ $<
 
-rom/blink.bin: rom/blink.asm
-	z80asm rom/blink.asm -o rom/blink.bin
-
-rom/blink.mif: rom/blink.bin
-	srec_cat rom/blink.bin -binary -o rom/blink.mif -mif -output_block_size=16
+%.mif: %.bin
+	srec_cat $< -binary -o $@ -mif -output_block_size=16
 
 build: rom/blink.mif
 	quartus_sh --flow compile matrix
-
-rom: rom/blink.mif
-	quartus_cdb --update_mif matrix
-	quartus_asm matrix
 
 program:
 	quartus_pgm -m jtag -c 1 -o "p;output_files/matrix.sof@1"
 
 clean:
-	rm -rf db incremental_db output_files
+	rm -rf db incremental_db output_files rom/*.bin
+
+blink: rom/blink.mif
+	cp rom/blink.mif rom/prog_rom.mif
+	quartus_cdb --update_mif matrix
+	quartus_asm matrix
