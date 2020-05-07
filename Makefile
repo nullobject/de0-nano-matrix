@@ -20,6 +20,11 @@ blink: rom/blink.mif
 	quartus_cdb --update_mif matrix
 	quartus_asm matrix
 
+leds: rom/leds.mif
+	cp $< rom/prog_rom.mif
+	quartus_cdb --update_mif matrix
+	quartus_asm matrix
+
 tiles: rom/tiles.mif rom/tiles.hex
 	cp $< rom/prog_rom.mif
 	quartus_cdb --update_mif matrix
