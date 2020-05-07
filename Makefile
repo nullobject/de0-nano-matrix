@@ -16,6 +16,11 @@ clean:
 	rm -rf db incremental_db output_files rom/*.bin
 
 blink: rom/blink.mif
-	cp rom/blink.mif rom/prog_rom.mif
+	cp $< rom/prog_rom.mif
+	quartus_cdb --update_mif matrix
+	quartus_asm matrix
+
+tiles: rom/tiles.mif rom/tiles.hex
+	cp $< rom/prog_rom.mif
 	quartus_cdb --update_mif matrix
 	quartus_asm matrix
