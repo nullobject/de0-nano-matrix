@@ -16,7 +16,7 @@ program:
 	quartus_pgm -m jtag -c 1 -o "p;output_files/matrix.sof@1"
 
 clean:
-	rm -rf db incremental_db output_files rom/*.bin
+	rm -rf db incremental_db output_files rom/*.bin rom/*.mif
 
 blink: rom/blink.mif
 	cp $< rom/prog_rom.mif
