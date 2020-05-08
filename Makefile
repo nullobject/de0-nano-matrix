@@ -1,5 +1,8 @@
 .PHONY: build rom program clean
 
+# Don't delete intermediate bin files.
+.PRECIOUS: %.bin
+
 %.bin: %.asm
 	z80asm -I rom -o $@ $<
 
