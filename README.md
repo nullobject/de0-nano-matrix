@@ -8,14 +8,16 @@ Install dependencies;
 
     $ sudo apt install srecord z80asm
 
-Compile:
+Compile the core:
 
-    $ make compile
+    $ make build
 
-Program:
+Compile an example program (choose one):
+
+    $ make blink
+    $ make leds
+    $ make tile
+
+Program the DE0-Nano:
 
     $ make program
-
-Rebuild program ROM:
-
-    $ make rom

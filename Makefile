@@ -1,4 +1,4 @@
-.PHONY: build rom program clean
+.PHONY: build program clean
 
 # Don't delete intermediate bin files.
 .PRECIOUS: %.bin
