@@ -37,7 +37,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity matrix is
+entity top is
   port (
     -- 50MHz clock
     clk : in std_logic;
@@ -52,9 +52,9 @@ entity matrix is
     rows : out std_logic_vector(7 downto 0);
     cols : out std_logic_vector(7 downto 0)
   );
-end matrix;
+end top;
 
-architecture arch of matrix is
+architecture arch of top is
   constant PROG_ROM_ADDR_WIDTH  : natural := 14;
   constant WORK_RAM_ADDR_WIDTH  : natural := 14;
   constant VIDEO_RAM_ADDR_WIDTH : natural := 6;
