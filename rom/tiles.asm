@@ -40,24 +40,26 @@ STACK_ADDR: equ $8000 ; stack address
 
 DISPLAY_SIZE: equ 64 ; pixels
 
-DELAY_DURATION: equ $2000; 1 second
+DELAY_DURATION: equ $2000
 
-MIN_TILE_INDEX: equ 48 ; 0
-MAX_TILE_INDEX: equ 91 ; Z
+MIN_TILE_INDEX: equ 48
+MAX_TILE_INDEX: equ 91
 
-TILE_INDEX: equ 0
+TILE_INDEX: equ 0 ; tile index WRAM offset
 
   ld sp, STACK_ADDR
   di
 
+; Load min tile index to RAM.
 start:
   ld ix, WRAM_ADDR
-  ld (ix+TILE_INDEX), MIN_TILE_INDEX ; initialise tile index
+  ld (ix+TILE_INDEX), MIN_TILE_INDEX
 
+; Main loop.
 loop:
   ld ix, WRAM_ADDR
   ld a, MAX_TILE_INDEX
-  cp (ix+TILE_INDEX)
+  cp (ix+TILE_INDEX)    ; compare tile index to max
   jp z, start
 
   ld c, (ix+TILE_INDEX) ; load tile index into C
@@ -69,23 +71,23 @@ loop:
 
   jp loop
 
-; Blit a tile to the VRAM.
+; Blit a tile to VRAM.
 ;
 ; c - tile code
 blit_tile:
-  ld h, 0
+  ld h, 0             ; load tile code into HL
   ld l, c
+  add hl, hl          ; shift left 6 bits (i.e. multiply by 64)
   add hl, hl
   add hl, hl
   add hl, hl
   add hl, hl
   add hl, hl
-  add hl, hl
-  ld bc, tiles
-  add hl, bc
+  ld bc, tiles        ; base tile address
+  add hl, bc          ; add base tile address to offset
   ld bc, DISPLAY_SIZE ; number of bytes to copy
   ld de, VRAM_ADDR    ; start address
-  ldir                ; copy bytes from address DE to address HL
+  ldir                ; transfer bytes from address HL to address DE
   ret
 
 ; Delays for a duration.
