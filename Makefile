@@ -13,7 +13,7 @@ build: rom/blink.mif
 	quartus_sh --flow compile matrix
 
 program:
-	quartus_pgm -m jtag -c 1 -o "p;output_files/matrix.sof@1"
+	quartus_pgm -m jtag -c USB-Blaster -o "p;output_files/matrix.sof@1"
 
 clean:
 	rm -rf db incremental_db output_files rom/*.bin rom/*.mif
